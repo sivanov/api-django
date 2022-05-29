@@ -1,4 +1,6 @@
 ## Setting up Django Backend
+**Notice**: Commands used in this tutorial are executed under Linux Mint and are not tested under Windows and MAC OS
+
 Open a new terminal window and run the following command to create a new project directory:
 ```sh
 mkdir api-django
