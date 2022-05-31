@@ -234,7 +234,114 @@ Add some task for test.
 ![](./screenshots/django-admin-todo-add-tasks.png)
 
 
-#### Statistics
+### Creating API using Django REST Framework
+In this example we will use [django-rest-framework.org](https://www.django-rest-framework.org/) and [django-cors-headers](https://pypi.org/project/django-cors-headers/). 
+django-cors-headers  adds Cross-Origin Resource Sharing (CORS) headers to responses. This allows in-browser requests to your Django application from other origins in our case from localhost
 
+If server is still running you must stop is with keys combination CRL + C and then install new required packages:
+```sh
+pip3 install djangorestframework django-cors-headers
+```
+
+Open and edit file: backend/settings.py
+```py
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'todo', # our first Django Application
+    'corsheaders',
+    'rest_framework',
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+]
+```
+Then add this lines to the bottom of the backend/settings.py file:
+```py
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000'
+]
+```
+
+### Convert model instances to JSON - creating serializers
+
+Serializers will send JSON data to any frontend. In todo folder create new file with name serializers.py.
+Path must be like this: backend/todo/serializers.py
+```py
+# backend/todo/serializers.py
+from rest_framework import serializers
+from .models import Todo
+
+class TodoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Todo
+        # fields contained and converted in JSON data
+        fields = ('id', 'title', 'description', 'completed')
+```
+
+To be more easy our development we need to create View. Open file todo/views.py:
+```py
+from django.shortcuts import render
+# base class provides the implementation for CRUD operations by default
+from rest_framework import viewsets
+from .serializers import TodoSerializer
+from .models import Todo
+
+class TodoView(viewsets.ModelViewSet):
+    serializer_class = TodoSerializer
+    queryset = Todo.objects.all()
+```
+
+### API URLs
+Final step is to define URL paths for our API. Open file backend/urls.py:
+```py
+# backend/urls.py
+from django.contrib import admin
+from django.urls import path, include
+from rest_framework import routers
+from todo import views
+
+
+router = routers.DefaultRouter()
+router.register(r'todos', views.TodoView, 'todo')
+
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/v1/', include(router.urls)),
+]
+```
+
+run server: 
+```py
+python manage.py runserver
+```
+Open browser and visit:
+[http://127.0.0.1:8000/api/v1/todos/](http://127.0.0.1:8000/api/v1/todos/) - list all TODO tasks
+![](./screenshots/django-todo-list-tasks.png)
+
+
+[http://127.0.0.1:8000/api/v1/todos/1](http://127.0.0.1:8000/api/v1/todos/1)- show only TODO with ID 1
+
+
+
+### Statistics for site-packages count and size
+
+.venv/share/python-wheels             27 items, totalling  2,2 MB<br>
 .venv/lib/python3.8/site-packages: 7 637 items, totalling 41,8 MB
-.venv/share/python-wheels             27 items, totalling  2,2 MB
+
+After installing django-rest-framework and django-cors-headers:
+
+.venv/lib/python3.8/site-packages: 8 775 items, totalling 46,7 MB
