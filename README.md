@@ -155,7 +155,7 @@ class Todo(models.Model):
     # by default all new created task will be uncompleted
     completed = models.BooleanField(default = False)
 
-    def _str_(self):
+    def __str__(self):
         return self.title
 ```
 Now is time to ask Django to create some changes for us in database. We using migrations for for this purpose.
@@ -335,6 +335,137 @@ Open browser and visit:
 
 [http://127.0.0.1:8000/api/v1/todos/1](http://127.0.0.1:8000/api/v1/todos/1)- show only TODO with ID 1
 
+
+### visual browser for SQLite DB
+[](https://sqlitebrowser.org/) is visual tool that will help you to understand how information is stored in SQLite 3 DB.
+Download and run program. Open file db.sqlite3 located in our project.
+![](./screenshots/db-sqlite-view.png)
+
+Alternative variant will be if you use VSC editor and need to download extension: [https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer)
+
+
+### Adding Category field in TODO app
+Open and edit file: 
+```py
+# Notice this Class must be placed before class Todo
+# Category table that inherits model.Models
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = ("Category")
+        verbose_name_plural = ("Categories")
+
+    def __str__(self):
+        return self.name # name to be shown when called
+
+
+class Todo(models.Model):
+.....
+```
+Notice: It is important to create from Admin Dashboard first default category and after that to connect model Category with model Todo
+
+creating new migrations based on the changes you have made to your models
+```
+python manage.py makemigrations
+```
+Terminal output:
+```sh
+Migrations for 'todo':
+  todo/migrations/0002_category.py
+    - Create model Category
+```
+
+To apply changes in Database
+```
+python manage.py migrate
+```
+terminal output:
+```sh
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, sessions, todo
+Running migrations:
+  Applying todo.0002_category... OK
+```
+Ok, now we need to add new model to be visible in Admin Dashboard.
+open file: backend/todo/admin.py  to look like this:
+```py
+from django.contrib import admin
+from .models import Category, Todo # Django now cant import our Model file
+
+class TodoAdmin(admin.ModelAdmin):
+    #  what fields will be visible in our Admin dashboard
+    list_display = ('title', 'description', 'completed')
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+# Register your models here.
+admin.site.register(Todo, TodoAdmin)
+admin.site.register(Category, CategoryAdmin)
+```
+
+start server 
+```sh
+python manage.py  runserver
+```
+
+Open in browser [http://localhost:8000/admin](http://localhost:8000/admin)
+Now you can see new section with name 'Category'. Add  new category with name 'Default'
+![](./screenshots/django-todo-adding-category.png)
+
+Now stop server with Ctr + C. Open and edit file: backend/todo/models.py
+```py
+class Todo(models.Model):
+    # we can write max 200 characters in Title field
+    title = models.CharField(max_length = 200)
+    description = models.TextField()
+    # by default all new created task will be uncompleted
+    completed = models.BooleanField(default = False)
+    # Foreignkey
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, default = 1)
+```
+With on_delete=models.PROTECT we tell to Django is by some reason some category is deleted, to protect our task and to assign to him default value with id 1.It is good practice to not change this Default category name.
+
+Now it is time to update our migration with command:
+```
+python manage.py makemigrations
+```
+result:
+```sh
+Migrations for 'todo':
+  todo/migrations/0003_todo_category.py
+    - Add field category to todo
+```
+
+and to apply changes in DB
+```
+python manage.py migrate
+```
+result:
+```sh
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, sessions, todo
+Running migrations:
+  Applying todo.0003_todo_category... OK
+```
+Start again webserver:
+```
+python manage.py  runserver
+```
+Open in browser [http://localhost:8000/admin](http://localhost:8000/admin)
+and if you open some of task they will have populated default category now.
+![](./screenshots/django-admin-todo-default-category-exists.png)
+
+Feel fre to add new catagories and to update existing task with them.
+
+### Exposing new field Category in API JSON Data
+Open and edit file: backend/todo/serializers.py and add ```'category',```
+```py
+fields = ('id', 'title', 'category', 'description', 'completed')
+```
+If you open browser on [http://127.0.0.1:8000/api/v1/todos/](http://127.0.0.1:8000/api/v1/todos/) filed must exist in JSOn Data
+![](./screenshots/django-todo-api-existing-category-field.png)
 
 
 ### Statistics for site-packages count and size
