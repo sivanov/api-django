@@ -468,6 +468,20 @@ If you open browser on [http://127.0.0.1:8000/api/v1/todos/](http://127.0.0.1:80
 ![](./screenshots/django-todo-api-existing-category-field.png)
 
 
+### Show category name instead of Database ID
+Open and edit file and 2 rows one with comment and this after him: 
+```py
+class TodoSerializer(serializers.ModelSerializer):
+    # replace category ID in Database with actual human readable name
+    category = serializers.CharField(source="category.name", read_only=True)
+```
+
+![](./screenshots/django-todo-api-category-name.png)
+
+
+![](./screenshots/django-todo-api-category-name-in-results.png)
+
+
 ### Statistics for site-packages count and size
 
 .venv/share/python-wheels             27 items, totalling  2,2 MB<br>
