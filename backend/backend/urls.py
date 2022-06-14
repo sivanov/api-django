@@ -26,4 +26,6 @@ router.register(r'todos', views.TodoView, 'todo')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include(router.urls)),
+    # http://127.0.0.1:8000/api/v1/q/?search=todo
+    path('api/v1/q/', views.TodoSearchListView().as_view())
 ]

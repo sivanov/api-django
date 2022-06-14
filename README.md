@@ -535,6 +535,50 @@ If you check all existing task they will be filled with default value "1"
 Now is time this filed to be visible in API JSON data and Djnago buy default dont show new fields unless you explicitly do so.
 
 
+## Search inside title and description
+In some meoment you will have  lagre task list in TODO App and we need to have search functionallity.
+
+Open and edit file like this:
+```py
+from django.shortcuts import render
+# base class provides the implementation for CRUD operations by default
+from rest_framework import viewsets
+from .serializers import TodoSerializer
+from .models import Todo
+# for search 
+from rest_framework import filters
+from rest_framework import generics
+
+class TodoView(viewsets.ModelViewSet):
+    serializer_class = TodoSerializer
+    queryset = Todo.objects.all()
+
+# http://127.0.0.1:8000/api/v1/q/?search=todo
+class TodoSearchListView(generics.ListAPIView):
+    queryset = Todo.objects.all()
+    serializer_class = TodoSerializer
+    filter_backends = [filters.SearchFilter]
+    # search in 1 or more field in DB. Required to be CharField or TextField.
+    search_fields = ['title', 'description']
+```
+To be acesable our serch URL we need to add it inside file: backend/backend/urls.py
+```py
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/v1/', include(router.urls)),
+    # http://127.0.0.1:8000/api/v1/q/?search=todo
+    path('api/v1/q/', views.TodoSearchListView().as_view())
+]
+```
+Open URL [http://127.0.0.1:8000/api/v1/q/?search=](http://127.0.0.1:8000/api/v1/q/?search=)
+
+To test search by some world inside title or description witype after "="  some text for test
+for example like this [http://127.0.0.1:8000/api/v1/q/?search=todo](http://127.0.0.1:8000/api/v1/q/?search=todo)
+
+
+Waht will be result:
+
+![](./screenshots/django-todo-api-search-inside-title-and-description.png)
 
 
 ### Statistics for site-packages count and size
