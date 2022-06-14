@@ -8,4 +8,4 @@ class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         # fields contained and converted in JSON data
-        fields = ('id', 'title', 'category', 'description', 'completed')
+        fields = ('id', 'title', 'category', 'description', 'completed', 'priority')

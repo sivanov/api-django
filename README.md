@@ -482,6 +482,61 @@ class TodoSerializer(serializers.ModelSerializer):
 ![](./screenshots/django-todo-api-category-name-in-results.png)
 
 
+### Add priority field
+For simplicity range for priority will be from intigers from 1 to 10 scale. By this way you no need to remember words related with prioriry level and query to DB will be more simple for now.
+Open and edit file: backend/todo/models.py
+```py
+class Todo(models.Model):
+    PRIORITY_LEVELS = (
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+        ('5', '5'),
+        ('6', '6'),
+        ('7', '7'),
+        ('8', '8'),
+        ('9', '9'),
+        ('10', '10'),
+    )
+```
+
+
+```
+python manage.py makemigrations
+```
+Output:
+```sh
+Migrations for 'todo':
+  todo/migrations/0004_todo_priority.py
+    - Add field priority to todo
+```
+
+```
+python manage.py migrate
+```
+output:
+```sh
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, sessions, todo
+Running migrations:
+  Applying todo.0004_todo_priority... OK
+```
+
+Is webserver is not running start it with:
+```
+python manage.py  runserver
+```
+open Admin dashboard: [http://127.0.0.1:8000/admin/todo/todo/1/change/](http://127.0.0.1:8000/admin/todo/todo/1/change/)
+
+If you check all existing task they will be filled with default value "1"
+![](./screenshots/django-todo-api-priority-fields.png)
+
+Now is time this filed to be visible in API JSON data and Djnago buy default dont show new fields unless you explicitly do so.
+
+
+
+
 ### Statistics for site-packages count and size
 
 .venv/share/python-wheels             27 items, totalling  2,2 MB<br>
