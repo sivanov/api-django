@@ -1,3 +1,6 @@
+## Backedn REST API TODO App with Django 4 and Django Rest Framework (DRF)
+This project ir related with : [Svelte Front-end App](https://github.com/sivanov/frontend-svelte)
+
 ## Setting up Django Backend
 **Notice**: Commands used in this tutorial are executed under Linux Mint and are not tested under Windows and MAC OS
 
