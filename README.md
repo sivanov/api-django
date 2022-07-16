@@ -340,7 +340,7 @@ Open browser and visit:
 
 
 ### visual browser for SQLite DB
-[](https://sqlitebrowser.org/) is visual tool that will help you to understand how information is stored in SQLite 3 DB.
+[sqlitebrowser.org](https://sqlitebrowser.org/) is visual tool that will help you to understand how information is stored in SQLite 3 DB.
 Download and run program. Open file db.sqlite3 located in our project.
 ![](./screenshots/db-sqlite-view.png)
 
