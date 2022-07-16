@@ -19,6 +19,22 @@ Generate new venv with command:
 ```sh
 python3 -m venv .venv
 ```
+
+If you’re using Ubuntu Linux, or any other Debian-based distribution, it’s possible you’ll get the following error message:
+```sh
+The virtual environment was not created successfully because pip is not available
+```
+
+To solve this run :
+```sh
+sudo apt-get install python3-venv
+```
+Now repeat again up command:
+```sh
+python3 -m venv .venv
+```
+
+
 Now we need to activate venv:
 ```sh
 source .venv/bin/activate
@@ -26,6 +42,7 @@ source .venv/bin/activate
 # on success prompt will look like this:
 (venv)$: 
 ```
+
 Now is time to install needed python packages with pip3
 ```sh
 pip3 install django
